@@ -50,10 +50,11 @@ void BaseScene::PostUpdate()
 void BaseScene::PreDraw()
 {
 	// カメラ情報が無い場合は早期リターン
-	if (!m_camera)return;
-
-	// 現在のカメラ情報をシェーダーにセット
-	m_camera->SetToShader();
+	if (m_camera)
+	{
+		// 現在のカメラ情報をシェーダーにセット
+		m_camera->SetToShader();
+	}
 
 	for (auto& obj : m_objList)
 	{
