@@ -96,18 +96,6 @@ void Application::KdBeginDraw(bool usePostProcess)
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::KdPostDraw()
 {
-	//ImGui開始
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	//ImGui Demo ウィンドウ表示
-	ImGui::ShowDemoWindow(nullptr);
-
-	//ImGuiのレンダリング：ここより上にImGuiの描画はすること
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
 	// BackBuffer -> 画面表示
 	KdDirect3D::Instance().WorkSwapChain()->Present(0, 0);
 }
@@ -198,29 +186,6 @@ bool Application::Init(int w, int h)
 		}
 	}
 
-	//===============================================
-	//ImGui
-	//===============================================
-	//Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	//Setup Dear ImGui style
-	//ImGui::StyleColorsDark();
-	ImGui::StyleColorsClassic();
-	//Setup Platform/Renderer bindings
-	ImGui_ImplWin32_Init(m_window.GetWndHandle());
-	ImGui_ImplDX11_Init(KdDirect3D::Instance().WorkDev(), KdDirect3D::Instance().WorkDevContext());
-
-#include"imgui-master/ja_glyph_ranges.h"
-	ImGuiIO& io = ImGui::GetIO();
-	ImFontConfig config;
-	config.MergeMode = true;
-	io.Fonts->AddFontDefault();
-	//日本語対応
-	io.Fonts->AddFontFromFileTTF("c:/Windows/Fonts/msgothic.ttc", 13.0f, &config, glyphRangesJapanese);
-
-	
-
 	//===================================================================
 	// シェーダー初期化
 	//===================================================================
@@ -291,7 +256,6 @@ void Application::Execute()
 				End();
 			}
 		}
-
 		//=========================================
 		//
 		// アプリケーション更新処理
@@ -325,7 +289,6 @@ void Application::Execute()
 			DrawSprite();
 		}
 		KdPostDraw();
-		
 
 		//=========================================
 		//
@@ -352,10 +315,6 @@ void Application::Release()
 	KdAudioManager::Instance().Release();
 
 	KdDirect3D::Instance().Release();
-
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
 
 	// ウィンドウ削除
 	m_window.Release();

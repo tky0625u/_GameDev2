@@ -96,6 +96,9 @@ void Application::KdBeginDraw(bool usePostProcess)
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::KdPostDraw()
 {
+	//ImGui処理
+	ImGuiProcess();
+
 	// BackBuffer -> 画面表示
 	KdDirect3D::Instance().WorkSwapChain()->Present(0, 0);
 }
@@ -185,6 +188,31 @@ bool Application::Init(int w, int h)
 			return false;
 		}
 	}
+
+	//===================================================================
+	// imgui
+	//===================================================================
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	// Setup Dear ImGui style
+	// ImGui::StyleColorsDark();
+	ImGui::StyleColorsClassic();
+	// Setup Platform/Renderer bindings
+	ImGui_ImplWin32_Init(m_window.GetWndHandle());
+	ImGui_ImplDX11_Init(
+		KdDirect3D::Instance().WorkDev(), KdDirect3D::Instance().WorkDevContext());
+
+#include "imgui/ja_glyph_ranges.h"
+	ImGuiIO& io = ImGui::GetIO();
+	ImFontConfig config;
+	config.MergeMode = true;
+	io.Fonts->AddFontDefault();
+	// 日本語対応
+	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, glyphRangesJapanese);
+
+	m_ImGuiFlg = false;
+	m_KeyFlg = false;
 
 	//===================================================================
 	// シェーダー初期化
@@ -314,8 +342,58 @@ void Application::Release()
 
 	KdAudioManager::Instance().Release();
 
+	// imgui解放
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	KdDirect3D::Instance().Release();
 
 	// ウィンドウ削除
 	m_window.Release();
+}
+
+void Application::ImGuiProcess()
+{
+	////ImGui表示切替
+	//if (GetAsyncKeyState('I') & 0x8000)
+	//{
+	//	if (!m_KeyFlg)
+	//	{
+	//		if (m_ImGuiFlg)m_ImGuiFlg = false;
+	//		else if (!m_ImGuiFlg)m_ImGuiFlg = true;
+
+	//		m_KeyFlg = true;
+	//	}
+	//}
+	//else
+	//{
+	//	m_KeyFlg = false;
+	//}
+
+	//if(!m_ImGuiFlg)
+	return;
+
+	// ImGui開始
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	// ImGui Demo ウィンドウ表示 ※すごく参考になるウィンドウです。imgui_demo.cpp参照。
+	ImGui::ShowDemoWindow(nullptr);
+
+	// デバッグウィンドウ
+	if (ImGui::Begin("Debug Window"))
+	{
+		// FPS
+		ImGui::Text("FPS : %d", m_fpsController.m_nowfps);
+
+		//日本語表示テスト
+		//ImGui::Text((const char*)u8"あいうえお aiueo");
+	}
+	ImGui::End();
+
+	// Imguiのレンダリング：ここより上にimguiの描画はする事
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }

@@ -76,17 +76,6 @@
 #include <DirectXTex.h>
 
 //===============================================
-//ImGui
-//===============================================
-#define IMGUI_DEFINE_MATH_OPERATORS
-#define IMGUI_DEFINE_PLACEMENT_NEW
-#include"imgui-master/imgui.h"
-#include"imgui-master/imgui_internal.h"
-#include"imgui-master/backends/imgui_impl_win32.h"
-#include"imgui-master/backends/imgui_impl_dx11.h"
-#include"imgui-master/misc/cpp/imgui_stdlib.h"
-
-//===============================================
 //
 // Effekseer
 //

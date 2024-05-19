@@ -127,17 +127,9 @@ LRESULT CALLBACK KdWindow::callWindowProc(HWND hWnd, UINT message, WPARAM wParam
 	return pThis->WindowProc(hWnd, message, wParam, lParam);
 }
 
-//ImGui
-LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 // ウィンドウ関数
 LRESULT KdWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	//ImGuiにイベント通知
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam)) {
-		return true;
-	}
-
 	//===================================
 	//メッセージによって処理を選択
 	//===================================
