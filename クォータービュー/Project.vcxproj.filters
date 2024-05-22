@@ -70,6 +70,12 @@
     <Filter Include="Library\ImGui">
       <UniqueIdentifier>{76631a31-53da-42e7-9ada-f7cc717ac1c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Object">
+      <UniqueIdentifier>{1d11ef8e-dc1a-4dbd-a0d4-3a290f9b96b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\BackGround">
+      <UniqueIdentifier>{30d7aebe-dd02-4211-9502-35860cac1cdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -237,6 +243,9 @@
     <ClInclude Include="..\Library\ImGui\ja_glyph_ranges.h">
       <Filter>Library\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\BackGround\BackGround.h">
+      <Filter>Src\Application\Object\BackGround</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -376,6 +385,9 @@
     </ClCompile>
     <ClCompile Include="..\Library\ImGui\imgui_stdlib.cpp">
       <Filter>Library\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\BackGround\BackGround.cpp">
+      <Filter>Src\Application\Object\BackGround</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
