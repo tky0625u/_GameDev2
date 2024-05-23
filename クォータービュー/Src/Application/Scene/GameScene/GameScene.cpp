@@ -1,6 +1,7 @@
 ﻿#include "GameScene.h"
 #include"../SceneManager.h"
 #include"../../Object/BackGround/BackGround.h"
+#include"../../Object/Ground/Ground.h"
 
 void GameScene::Event()
 {
@@ -15,13 +16,19 @@ void GameScene::Event()
 void GameScene::Init()
 {
 	//カメラ　生成＆視野角設定====================================================================================
-	m_camera = std::make_unique<KdCamera>();                                             //メモリ確保
-	m_camera->SetProjectionMatrix(60);                                                   //視野角設定
+	m_camera = std::make_unique<KdCamera>();  //メモリ確保
+	m_camera->SetProjectionMatrix(60);        //視野角設定
 	//============================================================================================================
 	
 	//背景========================================================================================================
 	std::shared_ptr<BackGround> back = std::make_shared<BackGround>();  //メモリ確保
 	back->Init();                                                       //初期化
 	m_objList.push_back(back);                                          //リストへ追加
+	//============================================================================================================
+
+	//地面========================================================================================================
+	std::shared_ptr<Ground> ground = std::make_shared<Ground>();  //メモリ確保
+	ground->Init();												  //初期化
+	m_objList.push_back(ground);								  //リストへ追加
 	//============================================================================================================
 }
