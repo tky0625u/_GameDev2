@@ -14,8 +14,8 @@ void Ground::Init()
 	m_model->Load("Asset/Models/Ground/Ground.gltf");
 
 	//ワールド行列 合成
-	Math::Matrix Scale = Math::Matrix::CreateScale(100);
-	Math::Matrix Rot = Math::Matrix::CreateRotationX(0);
-	Math::Matrix Trans = Math::Matrix::CreateTranslation(0, 0, 0);
-	m_mWorld = Scale * Rot * Trans;
+	Math::Matrix Scale = Math::Matrix::CreateScale(100);            //拡大行列(Scale)
+	Math::Matrix Rot = Math::Matrix::CreateRotationX(0);            //回転行列(Rotation)
+	Math::Matrix Trans = Math::Matrix::CreateTranslation(0, 0, 0);  //座標行列(Translation)
+	m_mWorld = Scale * Rot * Trans;                                 //行列合成(S*R*T)
 }
