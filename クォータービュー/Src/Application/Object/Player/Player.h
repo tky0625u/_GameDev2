@@ -18,12 +18,15 @@ public:
 	void Init()override;
 
 private:
-
+	
 	//板ポリゴン
 	KdSquarePolygon m_polygon;
 
 	//座標
 	Math::Vector3   m_pos;
+
+	//方向（ベクトルの向き）
+	Math::Vector3   m_dir;
 
 	//移動量
 	float           m_speed;
