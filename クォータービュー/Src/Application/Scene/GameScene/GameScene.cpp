@@ -16,6 +16,9 @@ void GameScene::Event()
 	if (m_player.expired() == false)
 	{
 		playerPos = m_player.lock()->GetPos();
+
+		//std::shared_ptr<Player> _work = m_player.lock();
+		//playerPos = _work->GetPos();
 	}
 	//====================================================================================================
 

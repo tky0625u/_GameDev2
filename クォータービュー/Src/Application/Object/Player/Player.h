@@ -30,4 +30,7 @@ private:
 
 	//移動量
 	float           m_speed;
+
+	//重力
+	float           m_gravity;
 };
