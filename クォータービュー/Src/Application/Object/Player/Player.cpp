@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 #include"../../Scene/SceneManager.h"
+#include"../Attack/Attack.h"
 
 void Player::Update()
 {
@@ -7,7 +8,8 @@ void Player::Update()
 
 	//移動関係をクリア
 	m_dir = Math::Vector3::Zero;
-	m_dirType = 0;  //ビット列をクリア
+	UINT oldDirType = m_dirType;  //前回の方向タイプを退避
+	m_dirType = 0;                //ビット列をクリア
 
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
@@ -22,14 +24,28 @@ void Player::Update()
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
 		m_dir += {1, 0, 0};
-		m_dirType = m_dirType | DirType::Right;
+		m_dirType |= DirType::Right;
 	}
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_dir += {-1, 0, 0};
-		m_dirType = m_dirType | DirType::Left;
+		m_dirType |= DirType::Left;
 	}
-	ChangeAnimation();
+
+	//向きが変わっていればアニメーション情報変更
+	if (m_dirType != 0 && oldDirType != m_dirType)
+	{
+		ChangeAnimation();
+
+		//最後に変更された向き　＝　攻撃方向なので、保存しておく
+		m_attackDir = m_dir;
+		m_attackDir.Normalize();
+	}
+	//変わっていなければ元の向き（退避データ）に戻す
+	else
+	{
+		m_dirType = oldDirType;
+	}
 
 	//ジャンプ処理
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
@@ -47,6 +63,34 @@ void Player::Update()
 	//重力をキャラに反映
 	m_pos.y -= m_gravity;
 	m_gravity += 0.005f;
+
+	//攻撃
+	if (GetAsyncKeyState('Z') & 0x8000)
+	{
+		if (!m_keyFlg)
+		{
+			m_keyFlg = true;
+
+			//攻撃オブジェクトを出現させる座標を確定する
+			Math::Vector3 _attackPos = {};
+			_attackPos = m_pos;               //プレイヤーの座標
+			_attackPos += m_attackDir * 0.4;  //攻撃方向へのベクトル
+
+			//攻撃オブジェクト作成
+			std::shared_ptr<Attack>attack;
+			attack = std::make_shared<Attack>();
+			attack->Init();
+			attack->SetPos(_attackPos);
+			SceneManager::Instance().AddObject(attack);
+
+			//攻撃SE再生
+			KdAudioManager::Instance().Play("Asset/Sounds/Attack.WAV", false);
+		}
+	}
+	else
+	{
+		m_keyFlg = false;
+	}
 
 	//アニメーション更新
 	int animeCnt;
@@ -108,7 +152,7 @@ void Player::Update()
 	//レイに当たった結果リストから一番近いオブジェクトを検出
 	bool hit = false;
 	float maxOverLap = 0;
-	Math::Vector3 groundPos = {};  //レイがsy団された(Hitした)座標
+	Math::Vector3 groundPos = {};  //レイが遮断された(Hitした)座標
 
 	for (auto& ret : retRayList)
 	{
@@ -169,6 +213,9 @@ void Player::Init()
 	m_pos = { 0,0,0 };
 	m_speed = 0.1f;
 
+	//攻撃方向
+	m_attackDir = {};
+
 	//重力
 	m_gravity = 0.0f;
 
@@ -183,48 +230,96 @@ void Player::Init()
 
 	//デバッグワイヤー作成
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
+
+	//押しっぱ防止
+	m_keyFlg = false;
 }
 
 void Player::ChangeAnimation()
 {
 	//各方向を判別
-	switch (m_dirType)
+
+	//上下左右
+	if (m_dirType & DirType::Up)
 	{
-	case 1:
 		m_animeInfo.start = 24;
 		m_animeInfo.end = 27;
-		break;
-	case 2:
+	}
+	if (m_dirType & DirType::Down)
+	{
 		m_animeInfo.start = 4;
 		m_animeInfo.end = 7;
-		break;
-	case 4:
+	}
+	if (m_dirType & DirType::Left)
+	{
 		m_animeInfo.start = 12;
 		m_animeInfo.end = 15;
-		break;
-	case 5:
-		m_animeInfo.start = 20;
-		m_animeInfo.end = 23;
-		break;
-	case 6:
-		m_animeInfo.start = 0;
-		m_animeInfo.end = 3;
-		break;
-	case 8:
+	}
+	if (m_dirType & DirType::Right)
+	{
 		m_animeInfo.start = 16;
 		m_animeInfo.end = 19;
-		break;
-	case 9:
+	}
+
+	//斜め方向
+	if (m_dirType == (DirType::Up | DirType::Left))
+	{
+		m_animeInfo.start = 20;
+		m_animeInfo.end = 23;
+	}
+	if (m_dirType == (DirType::Up | DirType::Right))
+	{
 		m_animeInfo.start = 28;
 		m_animeInfo.end = 31;
-		break;
-	case 10:
+	}
+	if (m_dirType == (DirType::Down | DirType::Right))
+	{
+		m_animeInfo.start = 0;
+		m_animeInfo.end = 3;
+	}
+	if (m_dirType == (DirType::Down | DirType::Right))
+	{
 		m_animeInfo.start = 8;
 		m_animeInfo.end = 11;
-		break;
-	default:
-		break;
 	}
+
+	//switch (m_dirType)
+	//{
+	//case 1:
+	//	m_animeInfo.start = 24;
+	//	m_animeInfo.end = 27;
+	//	break;
+	//case 2:
+	//	m_animeInfo.start = 4;
+	//	m_animeInfo.end = 7;
+	//	break;
+	//case 4:
+	//	m_animeInfo.start = 12;
+	//	m_animeInfo.end = 15;
+	//	break;
+	//case 5:
+	//	m_animeInfo.start = 20;
+	//	m_animeInfo.end = 23;
+	//	break;
+	//case 6:
+	//	m_animeInfo.start = 0;
+	//	m_animeInfo.end = 3;
+	//	break;
+	//case 8:
+	//	m_animeInfo.start = 16;
+	//	m_animeInfo.end = 19;
+	//	break;
+	//case 9:
+	//	m_animeInfo.start = 28;
+	//	m_animeInfo.end = 31;
+	//	break;
+	//case 10:
+	//	m_animeInfo.start = 8;
+	//	m_animeInfo.end = 11;
+	//	break;
+	//default:
+	//	break;
+	//}
 
 	//カウントとスピード初期化
 	m_animeInfo.count = 0;

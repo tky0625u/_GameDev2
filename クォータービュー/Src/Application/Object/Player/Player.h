@@ -43,10 +43,10 @@ private:
 	KdSquarePolygon m_polygon;
 
 	//アニメーション情報
-	AnimationInfo  m_animeInfo;
+	AnimationInfo   m_animeInfo;
 
 	//キャラが向いている方向種類 ビット管理
-	UINT           m_dirType;
+	UINT            m_dirType;
 
 	//座標
 	Math::Vector3   m_pos;
@@ -57,6 +57,12 @@ private:
 	//移動量
 	float           m_speed;
 
+	//攻撃方向
+	Math::Vector3   m_attackDir;
+
 	//重力
 	float           m_gravity;
+
+	//押しっぱ防止
+	bool            m_keyFlg;
 };
